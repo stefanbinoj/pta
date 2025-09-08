@@ -1,0 +1,11 @@
+{
+  "name": "pta-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "cd apps/cli && bun run dev"
+  },
+}

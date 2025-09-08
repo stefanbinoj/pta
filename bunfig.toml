@@ -1,0 +1,5 @@
+[workspace]
+"apps/cli" = "@pta/cli"
+"packages/core" = "@pta/core"
+"packages/api" = "@pta/api"
+"packages/utils" = "@pta/utils"

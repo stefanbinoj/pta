@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "nodenext",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "baseUrl": ".",
+        "paths": {
+            "@pta/*": [
+                "packages/*/src"
+            ]
+        }
+    },
+    "include": [
+        "packages/*/src",
+        "apps/*/src"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

@@ -1,0 +1,13 @@
+
+# Bun
+.bun
+node_modules
+*.log
+
+# TypeScript
+tsconfig.tsbuildinfo
+dist
+
+# Editor
+.vscode
+.idea
