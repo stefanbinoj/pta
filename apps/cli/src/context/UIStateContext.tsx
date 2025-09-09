@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { StreamingState } from "../types/index.ts";
+import { StreamingState } from "../types/index.tsx";
 import { SlashCommand } from "../types/commands.tsx";
 import { TextBuffer } from "../types/text-buffer.tsx";
 

@@ -1,6 +1,14 @@
 export enum StreamingState {
-  Idle = 'idle',
-  Responding = 'responding',
-  WaitingForConfirmation = 'waiting_for_confirmation',
+    Idle = "idle",
+    Responding = "responding",
+    WaitingForConfirmation = "waiting_for_confirmation",
 }
 
+export enum AuthState {
+    // Attemtping to authenticate or re-authenticate
+    Unauthenticated = "unauthenticated",
+    // Auth dialog is open for user to select auth method
+    Updating = "updating",
+    // Successfully authenticated
+    Authenticated = "authenticated",
+}
