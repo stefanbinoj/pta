@@ -4,6 +4,8 @@ import { Box, Text } from "ink";
 import { InputPrompt } from "./InputPrompt.tsx";
 import { LoadingIndicator } from "../ui/components/LoadingIndicator.tsx";
 import { useUIState } from "../context/UIStateContext.tsx";
+import { StreamingState } from "../types/index.tsx";
+import { Colors } from "../ui/colors.ts";
 
 const MAX_DISPLAYED_QUEUED_MESSAGES = 3;
 
@@ -11,7 +13,9 @@ export const Composer = () => {
     const uiState = useUIState();
     return (
         <Box flexDirection="column">
-            <LoadingIndicator />
+            {uiState.streamingState === StreamingState.Responding ? (
+                <LoadingIndicator />
+            ) : null}
 
             {uiState.messageQueue.length > 0 && (
                 <Box flexDirection="column" marginTop={1}>
@@ -21,7 +25,14 @@ export const Composer = () => {
                             const preview = message.replace(/\s+/g, " ");
 
                             return (
-                                <Box key={index} paddingLeft={2} width="100%">
+                                <Box
+                                    borderStyle="round"
+                                    borderColor={Colors.Gray}
+                                    key={index}
+                                    paddingLeft={2}
+                                    paddingRight={2}
+                                    alignSelf="flex-start"
+                                >
                                     <Text dimColor wrap="truncate">
                                         {preview}
                                     </Text>
@@ -29,7 +40,7 @@ export const Composer = () => {
                             );
                         })}
                     {uiState.messageQueue.length > MAX_DISPLAYED_QUEUED_MESSAGES && (
-                        <Box paddingLeft={2}>
+                        <Box paddingLeft={2} borderStyle="round" borderColor={Colors.Gray}>
                             <Text dimColor>
                                 ... (+
                                 {uiState.messageQueue.length -
@@ -40,13 +51,10 @@ export const Composer = () => {
                     )}
                 </Box>
             )}
-
             {uiState.isInputActive && (
                 <InputPrompt
-                    userMessages={uiState.userMessages}
                     slashCommands={uiState.slashCommands}
-                    focus={uiState.isFocused}
-                    buffer={uiState.buffer}
+                    onSubmit={uiState.onSubmit}
                 />
             )}
         </Box>

@@ -4,10 +4,12 @@ import { MainContent } from "./components/MainContent.tsx";
 import { Composer } from "./components/Composer.tsx";
 import { UIStateContext } from "./context/UIStateContext.tsx";
 import { initialState } from "./states/UIState.tsx";
+import { AuthUIStateContext } from "./context/AuthUIStateContext.tsx";
+import { authInitialState } from "./states/AuthUIState.tsx";
 
 const App = () => {
     return (
-        <Box flexDirection="column" width="90%">
+        <Box flexDirection="column" width="100%">
             <MainContent />
             <Box flexDirection="column">
                 <Composer />
@@ -19,7 +21,9 @@ const App = () => {
 export const AppContainer = () => {
     return (
         <UIStateContext.Provider value={initialState}>
-            <App />
+            <AuthUIStateContext.Provider value={authInitialState}>
+                <App />
+            </AuthUIStateContext.Provider>
         </UIStateContext.Provider>
     );
 };
