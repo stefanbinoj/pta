@@ -1,0 +1,18 @@
+export const Colors = {
+  type: 'GitHubDark',
+  Foreground: '#d1d5da',
+  Background: '#24292e',
+  LightBlue: '#79B8FF',
+  AccentBlue: '#79B8FF',
+  AccentPurple: '#B392F0',
+  AccentCyan: '#9ECBFF',
+  AccentGreen: '#85E89D',
+  AccentYellow: '#FFAB70',
+  AccentRed: '#F97583',
+  DiffAdded: '#3C4636',
+  DiffRemoved: '#502125',
+  Comment: '#6A737D',
+  Gray: '#6A737D',
+  GradientColors: ['#79B8FF', '#85E89D'],
+};
+

@@ -7,5 +7,5 @@
   ],
   "scripts": {
     "start": "cd apps/cli && bun run dev"
-  },
+  }
 }
