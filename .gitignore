@@ -11,3 +11,5 @@ dist
 # Editor
 .vscode
 .idea
+
+.env
