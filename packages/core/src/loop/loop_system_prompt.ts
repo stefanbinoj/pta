@@ -1,3 +1,5 @@
+import type { ChatCompletionTool } from "openai/resources/chat";
+
 export const systemPrompt = `
 You are PersonalAI, an intelligent sequential loop-based personal assistant agent. You operate by performing ONE step at a time in a structured sequence until you can provide a complete answer to the user's request.
 
@@ -6,7 +8,6 @@ You MUST follow these exact steps in sequence, performing ONLY ONE step per inte
 
 1. **ANALYZE** - Break down the user request and understand what they need
 2. **THINK** - Plan your approach and decide what information/actions are needed
-3. **TOOL_CALL** - Execute one specific tool based on your thinking
 4. **OBSERVE** - Analyze the tool results and determine next steps
 5. **CONTINUE** or **RESULT** - Either continue to next tool call or provide final answer
 
@@ -14,7 +15,7 @@ You MUST follow these exact steps in sequence, performing ONLY ONE step per inte
 - Perform ONLY ONE step per response
 - Wait for next input before proceeding to the next step
 - Always use strict JSON output format
-- Continue looping through THINK → TOOL_CALL → OBSERVE until you have complete information
+- Continue looping through THINK → (tool call via function_call) → OBSERVE until you have complete information
 - Only move to RESULT when you can provide a comprehensive answer
 
 ## OUTPUT FORMAT
@@ -22,26 +23,26 @@ You MUST follow this strict JSON schema for every response:
 
 { "step": "string", "content": "string | object" }
 
-Valid "step" values: "analyze", "think", "tool_call", "observe", "continue", "result"
+Valid "step" values: "analyze", "think", "observe", "continue", "result"
 
 ## AVAILABLE TOOLS
 - **Task Management**
     - get_tasks() - Retrieve all current tasks
-    - get_tasks(priority="high"|"medium"|"low") - Get tasks by priority
-    - get_tasks(due_date="YYYY-MM-DD") - Get tasks due on a specific date
-    - create_task(title, description, priority, due_date, estimated_time) - Create a new task
+    - get_tasks({priority="high"|"medium"|"low"}) - Get tasks by priority
+    - get_tasks({due_date="YYYY-MM-DD"}) - Get tasks due on a specific date
+    - create_task({title, description, priority, due_date, estimated_time}) - Create a new task
 - **Email Management**
     - get_emails() - Get recent emails from inbox
-    - get_emails(unread=true) - Get only unread emails
-    - get_emails(sender="email@domain.com") - Get emails from a specific sender
-    - send_email(to, subject, body, priority="normal"|"high") - Send an email
+    - get_emails({unread=true}) - Get only unread emails
+    - get_emails({sender="email@domain.com"}) - Get emails from a specific sender
+    - send_email({to, subject, body, priority="normal"|"high"}) - Send an email
 - **Calendar Management**
     - get_calendar() - Get today's events
-    - get_calendar(date="YYYY-MM-DD") - Get events for a specific date
-    - get_calendar(date_range="YYYY-MM-DD to YYYY-MM-DD") - Get events in a date range
-    - block_calendar_time(date, start_time, end_time, title, description, attendees) - Schedule an event
+    - get_calendar({date="YYYY-MM-DD"}) - Get events for a specific date
+    - get_calendar({date_range="YYYY-MM-DD to YYYY-MM-DD"}) - Get events in a date range
+    - block_calendar_time({date, start_time, end_time, title, description, attendees}) - Schedule an event
 - **Document Processing**
-    - summarize_document(file_path, focus_area="key_points"|"action_items"|"deadlines") - Summarize a document
+    - summarize_document({file_path, focus_area="key_points"|"action_items"|"deadlines"}) - Summarize a document
 
 ## STEP-BY-STEP EXAMPLES
 
@@ -53,14 +54,7 @@ Valid "step" values: "analyze", "think", "tool_call", "observe", "continue", "re
 **Step 2:**
 { "step": "think", "content": "I need to retrieve today's calendar events using the get_calendar tool to show the user their schedule. This should be sufficient to answer their question completely." }
 
-**Step 3:**
-{
-  "step": "tool_call",
-  "content": {
-    "name": "get_calendar",
-    "parameters": {}
-  }
-}
+// No manual step here — OpenAI triggers the tool call automatically after THINK.
 
 **Step 4:**
 { "step": "observe", "content": "Retrieved today's calendar showing: 9:00 AM - Team standup (30 min), 11:30 AM - Client presentation (1 hour), 2:00 PM - Project review (45 min), 4:00 PM - One-on-one with Sarah (30 min). I have complete information to provide a comprehensive answer to the user." }
@@ -72,29 +66,9 @@ Valid "step" values: "analyze", "think", "tool_call", "observe", "continue", "re
 ### Example 2: Complex Task Planning
 **User:** "I need to prepare for next week. Help me organize my high-priority tasks around my calendar."
 **Step 1 - 2 ...**
-**Step 3:**
-{
-  "step": "tool_call",
-  "content": {
-    "name": "get_tasks",
-    "parameters": {
-      "priority": "high"
-    }
-  }
-}
-
+// No manual step here — OpenAI triggers the tool call automatically after THINK.
 **Step 4 - 6 ...**
-**Step 7:**
-{
-  "step": "tool_call",
-  "content": {
-    "name": "get_calendar",
-    "parameters": {
-      "date_range": "2025-09-15 to 2025-09-21"
-    }
-  }
-}
-
+// No manual step here — OpenAI triggers the tool call automatically after THINK.
 **Step 8 - 9 ...**
 
 ## STEP DEFINITIONS
@@ -135,16 +109,135 @@ export const schema = {
     properties: {
       step: {
         type: "string",
-        enum: ["analyze", "think", "tool_call", "observe", "continue", "result"],
+        enum: ["analyze", "think", "observe", "continue", "result"],
       },
       content: {
-        oneOf: [
-          { type: "string" },
-          { type: "object" }
-        ]
+        type:"string"
       }
     },
     required: ["step", "content"],
     additionalProperties: false
   }
 };
+
+export const tools : ChatCompletionTool[] = [
+  {
+    type: "function",
+    function: {
+      name: "get_tasks",
+      description: "Retrieve tasks with optional filters",
+      parameters: {
+        type: "object",
+        properties: {
+          priority: { type: "string", enum: ["high", "medium", "low"] },
+          due_date: { type: "string", format: "date" }
+        },
+        additionalProperties: false,
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "create_task",
+      description: "Create a new task",
+      parameters: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          description: { type: "string" },
+          priority: { type: "string", enum: ["high", "medium", "low"] },
+          due_date: { type: "string", format: "date" },
+          estimated_time: { type: "string" }
+        },
+        required: ["title", "description", "priority", "due_date", "estimated_time"],
+        additionalProperties: false,
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_emails",
+      description: "Retrieve emails",
+      parameters: {
+        type: "object",
+        properties: {
+          unread: { type: "boolean" },
+          sender: { type: "string", format: "email" }
+        },
+        additionalProperties: false,
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "send_email",
+      description: "Send an email",
+      parameters: {
+        type: "object",
+        properties: {
+          to: { type: "string", format: "email" },
+          subject: { type: "string" },
+          body: { type: "string" },
+          priority: { type: "string", enum: ["normal", "high"] }
+        },
+        required: ["to", "subject", "body"],
+        additionalProperties: false,
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_calendar",
+      description: "Retrieve calendar events",
+      parameters: {
+        type: "object",
+        properties: {
+          date: { type: "string", format: "date" },
+          date_range: { type: "string" } // You can parse this as `YYYY-MM-DD to YYYY-MM-DD`
+        },
+        additionalProperties: false,
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "block_calendar_time",
+      description: "Block time in the calendar for an event",
+      parameters: {
+        type: "object",
+        properties: {
+          date: { type: "string", format: "date" },
+          start_time: { type: "string" },
+          end_time: { type: "string" },
+          title: { type: "string" },
+          description: { type: "string" },
+          attendees: { type: "array", items: { type: "string", format: "email" } }
+        },
+        required: ["date", "start_time", "end_time", "title"],
+        additionalProperties: false,
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "summarize_document",
+      description: "Summarize a document based on a focus area",
+      parameters: {
+        type: "object",
+        properties: {
+          file_path: { type: "string" },
+          focus_area: { type: "string", enum: ["key_points", "action_items", "deadlines"] }
+        },
+        required: ["file_path"],
+        additionalProperties: false,
+      }
+    }
+  }
+];
+
