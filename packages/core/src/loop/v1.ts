@@ -31,18 +31,27 @@ export const main = async () => {
     if (toolResponse) {
       messages.push({ role: "assistant", tool_calls: toolResponse });
       for (const toolCall of toolResponse) {
-        const args = JSON.parse(toolCall.function.arguments);
-        const name = toolCall.function.name
-        console.log(name, args);
+        if (toolCall.type === "function") {
+          const args = JSON.parse(toolCall.function.arguments);
+          const name = toolCall.function.name;
 
-        if (name === "get_tasks") {
-          console.log("hi");
-          messages.push({
-            role: "tool", tool_call_id: toolCall.id, content: JSON.stringify(todos),
-          });
-          console.log(messages);
+          if (name === "get_tasks") {
+            messages.push({
+              role: "tool",
+              tool_call_id: toolCall.id,
+              content: JSON.stringify(todos),
+            });
+          }
+
+          if (name === "create_task") { }
+          if (name === "get_emails") { }
+          if (name === "send_email") { }
+          if (name === "get_calendat") { }
+          if (name === "block_calendar_time") { }
+          if (name === "summarize_document") { }
+        } else {
+          console.warn("Unsupported tool call type:", toolCall.type);
         }
-
       }
     }
 

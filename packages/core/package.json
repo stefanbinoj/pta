@@ -8,5 +8,8 @@
     "dependencies": {
         "@pta/utils": "*",
         "openai": "^5.20.0"
+    },
+    "devDependencies": {
+        "@types/node": "^24.5.2"
     }
 }

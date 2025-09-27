@@ -30,7 +30,7 @@ Valid "step" values: "analyze", "think", "observe", "continue", "result"
     - get_tasks() - Retrieve all current tasks
     - get_tasks({priority="high"|"medium"|"low"}) - Get tasks by priority
     - get_tasks({due_date="YYYY-MM-DD"}) - Get tasks due on a specific date
-    - create_task({title, description, priority, due_date, estimated_time}) - Create a new task
+    - create_task({description, priority, due_date }) - Create a new task
 - **Email Management**
     - get_emails() - Get recent emails from inbox
     - get_emails({unread=true}) - Get only unread emails
