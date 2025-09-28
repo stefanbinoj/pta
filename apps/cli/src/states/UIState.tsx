@@ -1,15 +1,9 @@
-import { chatWithAI } from "@pta/core";
 import { UIState } from "../context/UIStateContext.tsx";
 import { StreamingState } from "../types/index.tsx";
 
-export const initialState: UIState = {
-    messageQueue: ["how are you?", "what is your name?", "tell me a joke"],
+export const initialState: Omit<UIState, "onSubmit"> = {
+    messageQueue: [],
     slashCommands: [],
-    streamingState: StreamingState.Idle, // <-- must match StreamingState type
+    streamingState: StreamingState.Idle,
     isInputActive: true,
-    onSubmit: (value: string) => {
-        console.log("calling")
-        chatWithAI(value);
-        console.log("called")
-    },
 };

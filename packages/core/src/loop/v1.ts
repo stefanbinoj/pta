@@ -2,14 +2,14 @@ import OpenAI from "openai";
 import { schema, systemPrompt, tools } from "./loop_system_prompt.ts";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
 import { create_task, get_tasks } from "../tools/tasks.ts";
+import { AddMessageType } from "../types/message.ts";
 
 const client = new OpenAI();
-export const messages: ChatCompletionMessageParam[] = [
+const messages: ChatCompletionMessageParam[] = [
     { role: "system", content: systemPrompt },
 ];
 
-export const main = async (userMessage: string) => {
-
+export const main = async (userMessage: string, AddMessage: AddMessageType) => {
     messages.push({ role: "user", content: userMessage });
 
     while (true) {
@@ -20,7 +20,6 @@ export const main = async (userMessage: string) => {
             tools: tools,
         });
         const response = completion.choices[0].message;
-        console.log("Response: ", response);
 
         const toolResponse = response?.tool_calls;
 
@@ -30,37 +29,37 @@ export const main = async (userMessage: string) => {
                 if (toolCall.type === "function") {
                     const args = JSON.parse(toolCall.function.arguments);
                     const name = toolCall.function.name;
-                    console.log(args);
+
+                    let tool_output_content: any;
 
                     if (name === "get_tasks") {
-                        const tasks = get_tasks(args);
-                        console.log("Tasks: ", tasks);
-                        messages.push({
-                            role: "tool",
-                            tool_call_id: toolCall.id,
-                            content: JSON.stringify(tasks),
-                        });
+                        tool_output_content = get_tasks(args);
+                    } else if (name === "create_task") {
+                        tool_output_content = create_task(args);
+                    } else if (name === "get_emails") {
+                        tool_output_content = { success: true, emails: [] };
+                    } else if (name === "send_email") {
+                        tool_output_content = { success: true, message: "Email sent" };
+                    } else if (name === "get_calendar") {
+                        tool_output_content = { success: true, events: [] };
+                    } else if (name === "block_calendar_time") {
+                        tool_output_content = {
+                            success: true,
+                            message: "Calendar blocked",
+                        };
+                    } else if (name === "summarize_document") {
+                        tool_output_content = {
+                            success: true,
+                            summary: "This is a summary.",
+                        };
                     }
 
-                    if (name === "create_task") {
-                        const result = create_task(args);
-                        messages.push({
-                            role: "tool",
-                            tool_call_id: toolCall.id,
-                            content: JSON.stringify(result),
-                        });
-                    }
-
-                    if (name === "get_emails") {
-                    }
-                    if (name === "send_email") {
-                    }
-                    if (name === "get_calendat") {
-                    }
-                    if (name === "block_calendar_time") {
-                    }
-                    if (name === "summarize_document") {
-                    }
+                    const tool_message = {
+                        role: "tool" as const,
+                        tool_call_id: toolCall.id,
+                        content: JSON.stringify(tool_output_content),
+                    };
+                    messages.push(tool_message);
                 } else {
                     console.warn("Unsupported tool call type:", toolCall.type);
                 }
@@ -74,20 +73,9 @@ export const main = async (userMessage: string) => {
             const content = JSON.parse(response.content as string);
             const step = content.step;
             const aiContent = content.content;
+            AddMessage({ role: "assistant", step: step, content: aiContent });
 
-            if (step === "analyze") {
-                // do nothing, wait for next input
-            } else if (step === "think") {
-                // do nothing, wait for next input
-            } else if (step === "clarify") {
-                // do nothing, wait for next input
-                // break
-            } else if (step === "observe") {
-                // do nothing, wait for next input
-            } else if (step === "continue") {
-                // do nothing, wait for next input
-            } else if (step === "result") {
-                console.log("Final Result: ", aiContent);
+            if (step === "clarify" || step === "result") {
                 break;
             }
         }

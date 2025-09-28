@@ -1,7 +1,9 @@
 import { main } from "./loop/v1.ts";
+import { AddMessageType } from "./types/message.ts";
 
-export const chatWithAI = async (userMessage: string) => {
-    await main(userMessage);
-}
-
-// chatWithAI("Create a task with high priority to submit the report by tomorrow.");
+export const chatWithAI = async (
+    userMessage: string,
+    AddMessage: AddMessageType,
+) => {
+    await main(userMessage, AddMessage);
+};
