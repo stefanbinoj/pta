@@ -1,20 +1,20 @@
 {
-  "name": "@pta/cli",
-  "version": "0.1.0",
-  "main": "src/cli.tsx",
-  "dependencies": {
-    "@pta/core": "*",
-    "cli-spinners": "^3.2.0",
-    "ink": "^6.2.3",
-    "ink-gradient": "^3.0.0",
-    "ink-spinner": "^5.0.0",
-    "ink-text-input": "^6.0.0",
-    "react": "^19.1.1"
-  },
-  "devDependencies": {
-    "@types/react": "^19.1.12"
-  },
-  "scripts": {
-    "dev": "bun run src/index.tsx"
-  }
+    "name": "@pta/cli",
+    "version": "0.1.0",
+    "main": "src/cli.tsx",
+    "dependencies": {
+        "@pta/core": "*",
+        "cli-spinners": "^3.2.0",
+        "ink": "^6.2.3",
+        "ink-gradient": "^3.0.0",
+        "ink-spinner": "^5.0.0",
+        "ink-text-input": "^6.0.0",
+        "react": "^19.1.1"
+    },
+    "devDependencies": {
+        "@types/react": "^19.1.12"
+    },
+    "scripts": {
+        "dev": "bun run src/index.tsx"
+    }
 }

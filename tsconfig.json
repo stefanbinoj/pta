@@ -11,16 +11,9 @@
         "outDir": "./dist",
         "baseUrl": ".",
         "paths": {
-            "@pta/*": [
-                "packages/*/src"
-            ]
+            "@pta/*": ["packages/*/src"]
         }
     },
-    "include": [
-        "packages/*/src",
-        "apps/*/src"
-    ],
-    "exclude": [
-        "node_modules"
-    ]
+    "include": ["packages/*/src", "apps/*/src"],
+    "exclude": ["node_modules"]
 }

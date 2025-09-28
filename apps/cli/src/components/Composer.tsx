@@ -39,8 +39,13 @@ export const Composer = () => {
                                 </Box>
                             );
                         })}
-                    {uiState.messageQueue.length > MAX_DISPLAYED_QUEUED_MESSAGES && (
-                        <Box paddingLeft={2} borderStyle="round" borderColor={Colors.Gray}>
+                    {uiState.messageQueue.length >
+                        MAX_DISPLAYED_QUEUED_MESSAGES && (
+                        <Box
+                            paddingLeft={2}
+                            borderStyle="round"
+                            borderColor={Colors.Gray}
+                        >
                             <Text dimColor>
                                 ... (+
                                 {uiState.messageQueue.length -

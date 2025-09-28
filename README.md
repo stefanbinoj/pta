@@ -12,11 +12,12 @@ A monorepo for a CLI personal assistant built with Ink, Bun, and TypeScript.
 ## Getting Started
 
 1. **Install dependencies:**
-   ```sh
-   bun install
-   ```
+
+    ```sh
+    bun install
+    ```
 
 2. **Run the CLI:**
-   ```sh
-   bun start
-   ```
+    ```sh
+    bun start
+    ```

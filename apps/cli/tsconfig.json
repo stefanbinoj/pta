@@ -2,9 +2,7 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "jsx": "react", // required for JSX to work
-        "types": [
-            "ink"
-        ], // ensures correct JSX typing from Ink
+        "types": ["ink"], // ensures correct JSX typing from Ink
         "allowImportingTsExtensions": true
     }
 }

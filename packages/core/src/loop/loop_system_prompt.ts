@@ -119,139 +119,157 @@ Valid "step" values: "analyze", "think", "clarify", "observe", "continue", "resu
 `;
 
 export const schema = {
-  name: "SequentialStep",
-  schema: {
-    type: "object",
-    properties: {
-      step: {
-        type: "string",
-        enum: ["analyze", "think", "clarify", "observe", "continue", "result"],
-      },
-      content: {
-        type:"string"
-      }
+    name: "SequentialStep",
+    schema: {
+        type: "object",
+        properties: {
+            step: {
+                type: "string",
+                enum: [
+                    "analyze",
+                    "think",
+                    "clarify",
+                    "observe",
+                    "continue",
+                    "result",
+                ],
+            },
+            content: {
+                type: "string",
+            },
+        },
+        required: ["step", "content"],
+        additionalProperties: false,
     },
-    required: ["step", "content"],
-    additionalProperties: false
-  }
 };
 
-export const tools : ChatCompletionTool[] = [
-  {
-    type: "function",
-    function: {
-      name: "get_tasks",
-      description: "Retrieve tasks with optional filters",
-      parameters: {
-        type: "object",
-        properties: {
-          priority: { type: "string", enum: ["high", "medium", "low"] },
-          due_date: { type: "string", format: "date" }
+export const tools: ChatCompletionTool[] = [
+    {
+        type: "function",
+        function: {
+            name: "get_tasks",
+            description: "Retrieve tasks with optional filters",
+            parameters: {
+                type: "object",
+                properties: {
+                    priority: {
+                        type: "string",
+                        enum: ["high", "medium", "low"],
+                    },
+                    due_date: { type: "string", format: "date" },
+                },
+                additionalProperties: false,
+            },
         },
-        additionalProperties: false,
-      }
-    }
-  },
-  {
-    type: "function",
-    function: {
-      name: "create_task",
-      description: "Create a new task",
-      parameters: {
-        type: "object",
-        properties: {
-          description: { type: "string" },
-          priority: { type: "string", enum: ["high", "medium", "low"] },
-          due_date: { type: "string", format: "date" },
+    },
+    {
+        type: "function",
+        function: {
+            name: "create_task",
+            description: "Create a new task",
+            parameters: {
+                type: "object",
+                properties: {
+                    description: { type: "string" },
+                    priority: {
+                        type: "string",
+                        enum: ["high", "medium", "low"],
+                    },
+                    due_date: { type: "string", format: "date" },
+                },
+                required: ["description", "priority", "due_date"],
+                additionalProperties: false,
+            },
         },
-        required: ["description", "priority", "due_date"],
-        additionalProperties: false,
-      }
-    }
-  },
-  {
-    type: "function",
-    function: {
-      name: "get_emails",
-      description: "Retrieve emails",
-      parameters: {
-        type: "object",
-        properties: {
-          unread: { type: "boolean" },
-          sender: { type: "string", format: "email" }
+    },
+    {
+        type: "function",
+        function: {
+            name: "get_emails",
+            description: "Retrieve emails",
+            parameters: {
+                type: "object",
+                properties: {
+                    unread: { type: "boolean" },
+                    sender: { type: "string", format: "email" },
+                },
+                additionalProperties: false,
+            },
         },
-        additionalProperties: false,
-      }
-    }
-  },
-  {
-    type: "function",
-    function: {
-      name: "send_email",
-      description: "Send an email",
-      parameters: {
-        type: "object",
-        properties: {
-          to: { type: "string", format: "email" },
-          subject: { type: "string" },
-          body: { type: "string" },
-          priority: { type: "string", enum: ["normal", "high"] }
+    },
+    {
+        type: "function",
+        function: {
+            name: "send_email",
+            description: "Send an email",
+            parameters: {
+                type: "object",
+                properties: {
+                    to: { type: "string", format: "email" },
+                    subject: { type: "string" },
+                    body: { type: "string" },
+                    priority: { type: "string", enum: ["normal", "high"] },
+                },
+                required: ["to", "subject", "body"],
+                additionalProperties: false,
+            },
         },
-        required: ["to", "subject", "body"],
-        additionalProperties: false,
-      }
-    }
-  },
-  {
-    type: "function",
-    function: {
-      name: "get_calendar",
-      description: "Retrieve calendar events",
-      parameters: {
-        type: "object",
-        properties: {
-          date: { type: "string", format: "date" },
-          date_range: { type: "string" } // You can parse this as `YYYY-MM-DD to YYYY-MM-DD`
+    },
+    {
+        type: "function",
+        function: {
+            name: "get_calendar",
+            description: "Retrieve calendar events",
+            parameters: {
+                type: "object",
+                properties: {
+                    date: { type: "string", format: "date" },
+                    date_range: { type: "string" }, // You can parse this as `YYYY-MM-DD to YYYY-MM-DD`
+                },
+                additionalProperties: false,
+            },
         },
-        additionalProperties: false,
-      }
-    }
-  },
-  {
-    type: "function",
-    function: {
-      name: "block_calendar_time",
-      description: "Block time in the calendar for an event",
-      parameters: {
-        type: "object",
-        properties: {
-          date: { type: "string", format: "date" },
-          start_time: { type: "string" },
-          end_time: { type: "string" },
-          title: { type: "string" },
-          description: { type: "string" },
-          attendees: { type: "array", items: { type: "string", format: "email" } }
+    },
+    {
+        type: "function",
+        function: {
+            name: "block_calendar_time",
+            description: "Block time in the calendar for an event",
+            parameters: {
+                type: "object",
+                properties: {
+                    date: { type: "string", format: "date" },
+                    start_time: { type: "string" },
+                    end_time: { type: "string" },
+                    title: { type: "string" },
+                    description: { type: "string" },
+                    attendees: {
+                        type: "array",
+                        items: { type: "string", format: "email" },
+                    },
+                },
+                required: ["date", "start_time", "end_time", "title"],
+                additionalProperties: false,
+            },
         },
-        required: ["date", "start_time", "end_time", "title"],
-        additionalProperties: false,
-      }
-    }
-  },
-  {
-    type: "function",
-    function: {
-      name: "summarize_document",
-      description: "Summarize a document based on a focus area",
-      parameters: {
-        type: "object",
-        properties: {
-          file_path: { type: "string" },
-          focus_area: { type: "string", enum: ["key_points", "action_items", "deadlines"] }
+    },
+    {
+        type: "function",
+        function: {
+            name: "summarize_document",
+            description: "Summarize a document based on a focus area",
+            parameters: {
+                type: "object",
+                properties: {
+                    file_path: { type: "string" },
+                    focus_area: {
+                        type: "string",
+                        enum: ["key_points", "action_items", "deadlines"],
+                    },
+                },
+                required: ["file_path"],
+                additionalProperties: false,
+            },
         },
-        required: ["file_path"],
-        additionalProperties: false,
-      }
-    }
-  }
+    },
 ];
-
