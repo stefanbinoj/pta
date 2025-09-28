@@ -4,16 +4,14 @@ import type { ChatCompletionMessageParam } from "openai/resources/chat";
 import { create_task, get_tasks } from "../tools/tasks.ts";
 
 const client = new OpenAI();
-const messages: ChatCompletionMessageParam[] = [
+export const messages: ChatCompletionMessageParam[] = [
     { role: "system", content: systemPrompt },
-    {
-        role: "user",
-        content:
-            "create a new tasks for calling my gf at 9pm today and dont book calendar event this is a must do task remind me okay",
-    },
 ];
 
-export const main = async () => {
+export const main = async (userMessage: string) => {
+
+    messages.push({ role: "user", content: userMessage });
+
     while (true) {
         const completion = await client.chat.completions.create({
             model: "gpt-5-2025-08-07",
@@ -21,7 +19,6 @@ export const main = async () => {
             response_format: { type: "json_schema", json_schema: schema },
             tools: tools,
         });
-
         const response = completion.choices[0].message;
         console.log("Response: ", response);
 

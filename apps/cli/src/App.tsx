@@ -22,7 +22,7 @@ export const AppContainer = () => {
     return (
         <UIStateContext.Provider value={initialState}>
             <AuthUIStateContext.Provider value={authInitialState}>
-                <App />
+                <App/>
             </AuthUIStateContext.Provider>
         </UIStateContext.Provider>
     );
