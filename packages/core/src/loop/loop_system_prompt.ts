@@ -144,13 +144,11 @@ export const tools : ChatCompletionTool[] = [
       parameters: {
         type: "object",
         properties: {
-          title: { type: "string" },
           description: { type: "string" },
           priority: { type: "string", enum: ["high", "medium", "low"] },
           due_date: { type: "string", format: "date" },
-          estimated_time: { type: "string" }
         },
-        required: ["title", "description", "priority", "due_date", "estimated_time"],
+        required: ["description", "priority", "due_date"],
         additionalProperties: false,
       }
     }

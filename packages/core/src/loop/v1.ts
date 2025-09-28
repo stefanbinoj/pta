@@ -1,17 +1,13 @@
 import OpenAI from "openai";
 import { schema, systemPrompt, tools } from "./loop_system_prompt.ts";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
+import { get_tasks } from "../tools/tasks.ts";
 
 const client = new OpenAI();
 const messages: ChatCompletionMessageParam[] = [
   { role: "system", content: systemPrompt },
-  { role: "user", content: "what is my tasks for today?" },
+  { role: "user", content: "create me a new todo for tommowrrow to call my gf and give her a suprise" },
 ]
-const todos = [
-  { id: 1, title: "Finish the report", dueDate: "202]5-09-15", priority: "high" },
-  { id: 2, title: "Email the client", dueDate: "2025-09-15", priority: "medium" },
-  { id: 3, title: "Team meeting", dueDate: "2025-09-16", priority: "low" },
-];
 
 export const main = async () => {
   while (true) {
@@ -31,19 +27,26 @@ export const main = async () => {
     if (toolResponse) {
       messages.push({ role: "assistant", tool_calls: toolResponse });
       for (const toolCall of toolResponse) {
+
         if (toolCall.type === "function") {
           const args = JSON.parse(toolCall.function.arguments);
           const name = toolCall.function.name;
+          console.log(args);
 
           if (name === "get_tasks") {
+            const tasks = get_tasks(args);
+            console.log("Tasks: ", tasks);
             messages.push({
               role: "tool",
               tool_call_id: toolCall.id,
-              content: JSON.stringify(todos),
+              content: JSON.stringify(tasks),
             });
           }
 
-          if (name === "create_task") { }
+          if (name === "create_task") {
+           console.log("Create Task Args: ", args);
+          }
+
           if (name === "get_emails") { }
           if (name === "send_email") { }
           if (name === "get_calendat") { }
