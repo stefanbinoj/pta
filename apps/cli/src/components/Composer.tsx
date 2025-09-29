@@ -14,8 +14,6 @@ export const Composer = () => {
             {uiState.messageQueue.length > 0 && (
                 <Box flexDirection="column" marginTop={1}>
                     {uiState.messageQueue.map((message, index) => {
-                        if (message.step === "think") return null;
-
                         if (message.role === "user") {
                             return (
                                 <Box
@@ -24,23 +22,30 @@ export const Composer = () => {
                                     key={index}
                                     paddingLeft={2}
                                     paddingRight={2}
+                                    marginY={1}
                                     alignSelf="flex-start"
                                 >
-                                    <Text dimColor>{message.content}</Text>
+                                    <Text color={Colors.Gray}>{message.content}</Text>
                                 </Box>
                             );
                         } else {
                             return (
-                                <Text key={index} color="white">
-                                    {message.content}
-                                </Text>
+                                <Box key={index}>
+                                    <Text color={Colors.AccentBlue}>{message.step}</Text>
+                                    <Text key={index} color="white">
+                                        {message.content}
+                                    </Text>
+                                </Box>
                             );
                         }
                     })}
                 </Box>
             )}
             {uiState.streamingState === StreamingState.Responding ? (
-                <LoadingIndicator />
+                <Box>
+                    <LoadingIndicator />
+                    <Text color={Colors.Gray}>AI is typing...</Text>
+                </Box>
             ) : uiState.isInputActive ? (
                 <InputPrompt
                     slashCommands={uiState.slashCommands}

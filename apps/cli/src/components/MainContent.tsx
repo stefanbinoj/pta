@@ -5,7 +5,7 @@ import { Header } from "../ui/components/header.tsx";
 export const MainContent = () => {
     return (
         <>
-            <Static items={[<Header />]}>{(item) => item}</Static>
+            <Static items={[<Header key="header" />]}>{(item) => item}</Static>
         </>
     );
 };
