@@ -21,7 +21,7 @@ export const InputPrompt = ({
     };
 
     return (
-        <Box borderColor={Colors.AccentBlue} borderStyle="round" paddingX={1} marginY={1}>
+        <Box borderColor={Colors.AccentBlue} borderStyle="round" paddingX={1} marginY={2}>
             <Box marginRight={1}>
                 <Text color={Colors.AccentBlue}>&gt;</Text>
             </Box>

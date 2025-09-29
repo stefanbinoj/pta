@@ -1,8 +1,3 @@
-export enum StreamingState {
-    Idle = "idle",
-    Responding = "responding",
-    WaitingForConfirmation = "waiting_for_confirmation",
-}
 
 export enum AuthState {
     // Attemtping to authenticate or re-authenticate

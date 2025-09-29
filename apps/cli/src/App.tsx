@@ -7,11 +7,11 @@ import { initialState } from "./states/UIState.tsx";
 import { AuthUIStateContext } from "./context/AuthUIStateContext.tsx";
 import { authInitialState } from "./states/AuthUIState.tsx";
 import { chatWithAI } from "@pta/core";
-import { StreamingState } from "./types/index.tsx";
 import type {
     AddMessageType,
     MessageListType,
 } from "@pta/core/src/types/message.ts";
+import { StreamingState } from "@pta/core/src/types/state.ts";
 
 const App = () => {
     return (

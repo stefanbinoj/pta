@@ -4,7 +4,7 @@ import { Box, Text } from "ink";
 import { InputPrompt } from "./InputPrompt.tsx";
 import { LoadingIndicator } from "../ui/components/LoadingIndicator.tsx";
 import { useUIState } from "../context/UIStateContext.tsx";
-import { StreamingState } from "../types/index.tsx";
+import { StreamingState } from "@pta/core/src/types/state.ts";
 import { Colors } from "../ui/colors.ts";
 
 export const Composer = () => {
@@ -28,6 +28,13 @@ export const Composer = () => {
                                     <Text color={Colors.Gray}>{message.content}</Text>
                                 </Box>
                             );
+                        } else if (message.step === "analyze") return null;
+                        else if (message.step === "think") {
+                            <Box key={index}>
+                                <Text key={index} dimColor>
+                                    {message.content}
+                                </Text>
+                            </Box>;
                         } else {
                             return (
                                 <Box key={index}>
