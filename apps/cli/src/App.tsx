@@ -43,7 +43,14 @@ export const AppContainer = () => {
             }));
         };
 
-        await chatWithAI(value, AddMessage);
+        const setStreamingState = (state: StreamingState) => {
+            setUiState((prev) => ({
+                ...prev,
+                streamingState: state,
+            }));
+        };
+
+        await chatWithAI(value, AddMessage, setStreamingState);
 
         setUiState((prev) => ({
             ...prev,

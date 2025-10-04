@@ -9,11 +9,13 @@ import { Colors } from "../ui/colors.ts";
 
 export const Composer = () => {
     const uiState = useUIState();
+
     return (
         <Box flexDirection="column">
             {uiState.messageQueue.length > 0 && (
                 <Box flexDirection="column" marginTop={1}>
                     {uiState.messageQueue.map((message, index) => {
+                        console.log("Rendering message:", message);
                         if (message.role === "user") {
                             return (
                                 <Box
@@ -30,15 +32,17 @@ export const Composer = () => {
                             );
                         } else if (message.step === "analyze") return null;
                         else if (message.step === "think") {
-                            <Box key={index}>
-                                <Text key={index} dimColor>
-                                    {message.content}
-                                </Text>
-                            </Box>;
+                            return (
+                                <Box key={index} marginY={1}>
+                                    <Text key={index} color={Colors.Gray}>
+                                        {message.content}
+                                    </Text>
+                                </Box>
+                            );
                         } else {
                             return (
                                 <Box key={index}>
-                                    <Text color={Colors.AccentBlue}>{message.step}</Text>
+                                    <Text color={Colors.AccentBlue}>✶</Text>
                                     <Text key={index} color="white">
                                         {message.content}
                                     </Text>
@@ -48,12 +52,27 @@ export const Composer = () => {
                     })}
                 </Box>
             )}
-            {uiState.streamingState === StreamingState.Responding ? (
-                <Box>
-                    <LoadingIndicator />
-                    <Text color={Colors.Gray}>AI is typing...</Text>
-                </Box>
-            ) : uiState.isInputActive ? (
+
+            {uiState.streamingState !== StreamingState.Idle ? (
+                uiState.streamingState === StreamingState.ToolCalling ? (
+                    <Box>
+                        <LoadingIndicator />
+                        <Text color={Colors.Gray}>Calling tool...</Text>
+                    </Box>
+                ) : uiState.streamingState === StreamingState.Responding ? (
+                    <Box>
+                        <LoadingIndicator />
+                        <Text color={Colors.Gray}>Thinking...</Text>
+                    </Box>
+                ) : uiState.streamingState === StreamingState.WaitingForConfirmation ? (
+                    <Box>
+                        <LoadingIndicator />
+                        <Text color={Colors.Gray}>Waiting For Confirmation...</Text>
+                    </Box>
+                ) : null
+            ) : null}
+
+            {uiState.isInputActive ? (
                 <InputPrompt
                     slashCommands={uiState.slashCommands}
                     onSubmit={uiState.onSubmit}

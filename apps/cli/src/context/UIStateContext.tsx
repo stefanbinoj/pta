@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
-import { StreamingState } from "../types/index.tsx";
 import { SlashCommand } from "../types/commands.tsx";
 import type { MessageListType } from "@pta/core/src/types/message.ts";
+import { StreamingState } from "@pta/core/src/types/state.ts";
 
 export interface UIState {
     messageQueue: MessageListType[];

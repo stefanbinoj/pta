@@ -3,14 +3,20 @@ import { schema, systemPrompt, tools } from "./loop_system_prompt.ts";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
 import { create_task, get_tasks } from "../tools/tasks.ts";
 import { AddMessageType } from "../types/message.ts";
+import { StreamingState } from "../types/state.ts";
 
 const client = new OpenAI();
 const messages: ChatCompletionMessageParam[] = [
     { role: "system", content: systemPrompt },
 ];
 
-export const main = async (userMessage: string, AddMessage: AddMessageType) => {
+export const main = async (
+    userMessage: string,
+    AddMessage: AddMessageType,
+    setStreamingState: (state: StreamingState) => void
+) => {
     messages.push({ role: "user", content: userMessage });
+    setStreamingState(StreamingState.Responding);
 
     while (true) {
         const completion = await client.chat.completions.create({
@@ -24,6 +30,7 @@ export const main = async (userMessage: string, AddMessage: AddMessageType) => {
         const toolResponse = response?.tool_calls;
 
         if (toolResponse) {
+            setStreamingState(StreamingState.ToolCalling);
             messages.push({ role: "assistant", tool_calls: toolResponse });
             for (const toolCall of toolResponse) {
                 if (toolCall.type === "function") {
@@ -64,6 +71,7 @@ export const main = async (userMessage: string, AddMessage: AddMessageType) => {
                     console.warn("Unsupported tool call type:", toolCall.type);
                 }
             }
+            setStreamingState(StreamingState.Responding);
         } else {
             messages.push({
                 role: "assistant",
@@ -75,7 +83,12 @@ export const main = async (userMessage: string, AddMessage: AddMessageType) => {
             const aiContent = content.content;
             AddMessage({ role: "assistant", step: step, content: aiContent });
 
-            if (step === "clarify" || step === "result") {
+            if (step === "clarify") {
+                setStreamingState(StreamingState.WaitingForConfirmation);
+                break;
+            }
+            if (step === "result") {
+                setStreamingState(StreamingState.Idle);
                 break;
             }
         }
