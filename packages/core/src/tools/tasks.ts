@@ -52,4 +52,22 @@ function create_task(data: {
     }
 }
 
-export { get_tasks, create_task, Task };
+function delete_task(id: string) {
+    try {
+        let tasks = readDB();
+        const initialLength = tasks.length;
+        tasks = tasks.filter((task) => task.id !== id);
+
+        if (tasks.length === initialLength) {
+            return { success: false, message: "Task not found" };
+        }
+
+        writeDB(tasks);
+        return { success: true, message: "Task deleted successfully" };
+    } catch (error) {
+        console.error("Error writing to DB:", error);
+        return { success: false, message: "Failed to delete task" };
+    }
+}
+
+export { get_tasks, create_task, delete_task, Task };

@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { schema, systemPrompt, tools } from "./loop_system_prompt.ts";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
-import { create_task, get_tasks } from "../tools/tasks.ts";
+import { create_task, delete_task, get_tasks } from "../tools/tasks.ts";
 import { AddMessageType } from "../types/message.ts";
 import { StreamingState } from "../types/state.ts";
 
@@ -43,6 +43,8 @@ export const main = async (
                         tool_output_content = get_tasks(args);
                     } else if (name === "create_task") {
                         tool_output_content = create_task(args);
+                    }else if(name === "delete_task"){
+                        tool_output_content = delete_task(args);
                     } else if (name === "get_emails") {
                         tool_output_content = { success: true, emails: [] };
                     } else if (name === "send_email") {

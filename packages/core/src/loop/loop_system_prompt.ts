@@ -33,6 +33,7 @@ Valid "step" values: "analyze", "think", "clarify", "observe", "continue", "resu
     - get_tasks({priority="high"|"medium"|"low"}) - Get tasks by priority
     - get_tasks({due_date="YYYY-MM-DD"}) - Get tasks due on a specific date
     - create_task({description, priority, due_date }) - Create a new task
+    - delete_task({id}) - Delete a task by ID
 - **Email Management**
     - get_emails() - Get recent emails from inbox
     - get_emails({unread=true}) - Get only unread emails
@@ -125,14 +126,7 @@ export const schema = {
         properties: {
             step: {
                 type: "string",
-                enum: [
-                    "analyze",
-                    "think",
-                    "clarify",
-                    "observe",
-                    "continue",
-                    "result",
-                ],
+                enum: ["analyze", "think", "clarify", "observe", "continue", "result"],
             },
             content: {
                 type: "string",
@@ -178,6 +172,24 @@ export const tools: ChatCompletionTool[] = [
                     due_date: { type: "string", format: "date" },
                 },
                 required: ["description", "priority", "due_date"],
+                additionalProperties: false,
+            },
+        },
+    },
+    {
+        type: "function",
+        function: {
+            name: "delete_task",
+            description: "Delete a task by ID",
+            parameters: {
+                type: "object",
+                properties: {
+                    id: {
+                        type: "string",
+                        description: "The unique identifier of the task to be deleted",
+                    },
+                },
+                required: ["id"],
                 additionalProperties: false,
             },
         },
