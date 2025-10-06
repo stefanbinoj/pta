@@ -29,14 +29,14 @@ function get_tasks(filter?: {
 
 function create_task(data: {
     description: string;
-    priority: Priority;
-    due_date: string;
+    priority?: Priority;
+    due_date?: string;
 }) {
     const newTask: Task = {
         id: generateId(),
         description: data.description,
-        priority: data.priority,
-        due_date: data.due_date,
+        priority: data.priority || "medium",
+        due_date: data.due_date || undefined,
         created_at: new Date().toISOString(),
     };
 

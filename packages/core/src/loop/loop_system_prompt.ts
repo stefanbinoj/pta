@@ -32,7 +32,7 @@ Valid "step" values: "analyze", "think", "clarify", "observe", "continue", "resu
     - get_tasks() - Retrieve all current tasks
     - get_tasks({priority="high"|"medium"|"low"}) - Get tasks by priority
     - get_tasks({due_date="YYYY-MM-DD"}) - Get tasks due on a specific date
-    - create_task({description, priority, due_date }) - Create a new task
+    - create_task({description, priority?, due_date? }) - Create a new task (priority defaults to 'medium', due_date is optional)
     - delete_task({id}) - Delete a task by ID
 - **Email Management**
     - get_emails() - Get recent emails from inbox
@@ -66,7 +66,23 @@ Valid "step" values: "analyze", "think", "clarify", "observe", "continue", "resu
 { "step": "result", "content": "Here's your schedule for today:nn• **9:00 AM - 9:30 AM**: Team standupn• **11:30 AM - 12:30 PM**: Client presentationn• **2:00 PM - 2:45 PM**: Project reviewn• **4:00 PM - 4:30 PM**: One-on-one with SarahnnYou have free time from 9:30-11:30 AM and 12:30-2:00 PM for focused work." }
 
 
-### Example 2: Complex Task Planning
+### Example 2: Simple Task Creation
+**User:** "Create a task to review the quarterly report"
+**Step 1:**
+{ "step": "analyze", "content": "The user wants to create a task to review the quarterly report. This is a straightforward task creation request." }
+
+**Step 2:**
+{ "step": "think", "content": "I have the task description. Since priority and due_date are optional, I can create the task immediately with default priority 'medium' and no due date." }
+
+// Tool call happens automatically after THINK
+
+**Step 3:**
+{ "step": "observe", "content": "Successfully created the task 'Review the quarterly report' with medium priority and no specific due date." }
+
+**Step 4:**
+{ "step": "result", "content": "I've created a task for you: 'Review the quarterly report' with medium priority. You can view your tasks anytime or let me know if you'd like to set a due date or change the priority." }
+
+### Example 3: Calendar Scheduling (Requires Clarification)
 **User:** "Schedule a call with John."
 **Step 1:**
 { "step": "analyze", "content": "The user wants to schedule a call with John. This likely involves using the calendar to block time, but the request lacks key details." }
@@ -90,10 +106,12 @@ Valid "step" values: "analyze", "think", "clarify", "observe", "continue", "resu
     - Plan the approach and sequence of actions
     - Identify what information or tools are needed
     - Consider user context and priorities
+    - **Only proceed to CLARIFY if truly essential information is missing. For task creation, priority and due_date are optional - do not ask for them unless the user specifically mentions deadlines or priorities.**
     - **If the user's request is missing necessary information to call a tool (e.g., missing a date for a calendar event), your next step should be CLARIFY, where you ask the user for the missing details.**
 - **CLARIFY**
     - Ask the user a clear, concise question to gather missing information or resolve ambiguity
-    - Should be used when the request cannot proceed due to missing required fields for tool calls
+    - Should be used ONLY when the request cannot proceed due to missing REQUIRED fields for tool calls
+    - For task creation: DO NOT ask for priority (defaults to 'medium') or due_date (optional) unless the user's context suggests they are needed
     - Include any examples or suggestions to help the user respond
 - **TOOL_CALL**
     - Execute ONE specific tool by providing a JSON object with its name and parameters.
@@ -160,7 +178,7 @@ export const tools: ChatCompletionTool[] = [
         type: "function",
         function: {
             name: "create_task",
-            description: "Create a new task",
+            description: "Create a new task with optional priority and due date",
             parameters: {
                 type: "object",
                 properties: {
@@ -168,10 +186,15 @@ export const tools: ChatCompletionTool[] = [
                     priority: {
                         type: "string",
                         enum: ["high", "medium", "low"],
+                        description: "Task priority, defaults to 'medium' if not specified"
                     },
-                    due_date: { type: "string", format: "date" },
+                    due_date: { 
+                        type: "string", 
+                        format: "date",
+                        description: "Due date in YYYY-MM-DD format, optional"
+                    },
                 },
-                required: ["description", "priority", "due_date"],
+                required: ["description"],
                 additionalProperties: false,
             },
         },
