@@ -4,15 +4,17 @@ import TextInput from "ink-text-input"; // 1. Import the TextInput component
 import { SlashCommand } from "../types/commands.tsx";
 import { Colors } from "../ui/colors.ts";
 
-export const InputPrompt = ({
-    slashCommands,
-    placeholder = "Chat with your AI assistant...",
-    onSubmit,
-}: {
+interface InputPromptProps {
     slashCommands: readonly SlashCommand[];
     placeholder?: string;
     onSubmit: (value: string) => void;
-}) => {
+}
+
+export const InputPrompt = React.memo(({
+    slashCommands,
+    placeholder = "Chat with your AI assistant...",
+    onSubmit,
+}: InputPromptProps) => {
     const [inputValue, setInputValue] = useState("");
 
     const handleSubmit = (value: string) => {
@@ -34,4 +36,6 @@ export const InputPrompt = ({
             />
         </Box>
     );
-};
+});
+
+InputPrompt.displayName = "InputPrompt";

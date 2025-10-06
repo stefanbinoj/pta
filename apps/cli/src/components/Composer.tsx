@@ -3,54 +3,21 @@ import { Box, Text } from "ink";
 
 import { InputPrompt } from "./InputPrompt.tsx";
 import { LoadingIndicator } from "../ui/components/LoadingIndicator.tsx";
+import { VirtualizedMessageList } from "./VirtualizedMessageList.tsx";
 import { useUIState } from "../context/UIStateContext.tsx";
 import { StreamingState } from "@pta/core/src/types/state.ts";
 import { Colors } from "../ui/colors.ts";
 
-export const Composer = () => {
+export const Composer = React.memo(() => {
     const uiState = useUIState();
 
     return (
         <Box flexDirection="column">
             {uiState.messageQueue.length > 0 && (
-                <Box flexDirection="column" marginTop={1}>
-                    {uiState.messageQueue.map((message, index) => {
-                        console.log("Rendering message:", message);
-                        if (message.role === "user") {
-                            return (
-                                <Box
-                                    borderStyle="round"
-                                    borderColor={Colors.Gray}
-                                    key={index}
-                                    paddingLeft={2}
-                                    paddingRight={2}
-                                    marginY={1}
-                                    alignSelf="flex-start"
-                                >
-                                    <Text color={Colors.Gray}>{message.content}</Text>
-                                </Box>
-                            );
-                        } else if (message.step === "analyze") return null;
-                        else if (message.step === "think") {
-                            return (
-                                <Box key={index} marginY={1}>
-                                    <Text key={index} color={Colors.Gray}>
-                                        {message.content}
-                                    </Text>
-                                </Box>
-                            );
-                        } else {
-                            return (
-                                <Box key={index}>
-                                    <Text color={Colors.AccentBlue}>✶</Text>
-                                    <Text key={index} color="white">
-                                        {message.content}
-                                    </Text>
-                                </Box>
-                            );
-                        }
-                    })}
-                </Box>
+                <VirtualizedMessageList 
+                    messages={uiState.messageQueue}
+                    maxVisibleMessages={50} // Adjust this based on performance needs
+                />
             )}
 
             {uiState.streamingState !== StreamingState.Idle ? (
@@ -80,4 +47,6 @@ export const Composer = () => {
             ) : null}
         </Box>
     );
-};
+});
+
+Composer.displayName = "Composer";

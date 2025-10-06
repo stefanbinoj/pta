@@ -13,7 +13,7 @@ const messages: ChatCompletionMessageParam[] = [
 export const main = async (
     userMessage: string,
     AddMessage: AddMessageType,
-    setStreamingState: (state: StreamingState) => void
+    setStreamingState: (state: StreamingState) => void,
 ) => {
     messages.push({ role: "user", content: userMessage });
     setStreamingState(StreamingState.Responding);
@@ -43,8 +43,9 @@ export const main = async (
                         tool_output_content = get_tasks(args);
                     } else if (name === "create_task") {
                         tool_output_content = create_task(args);
-                    }else if(name === "delete_task"){
-                        tool_output_content = delete_task(args);
+                    } else if (name === "delete_task") {
+                        console.log("deleting:",args)
+                        tool_output_content = delete_task(args.id);
                     } else if (name === "get_emails") {
                         tool_output_content = { success: true, emails: [] };
                     } else if (name === "send_email") {
@@ -73,8 +74,8 @@ export const main = async (
                     console.warn("Unsupported tool call type:", toolCall.type);
                 }
             }
-            setStreamingState(StreamingState.Responding);
         } else {
+            setStreamingState(StreamingState.Responding);
             messages.push({
                 role: "assistant",
                 content: response.content as string,

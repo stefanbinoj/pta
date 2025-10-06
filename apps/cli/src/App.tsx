@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { Box } from "ink";
 import { MainContent } from "./components/MainContent.tsx";
 import { Composer } from "./components/Composer.tsx";
@@ -28,7 +28,22 @@ export const AppContainer = () => {
     const [uiState, setUiState] =
         useState<Omit<UIState, "onSubmit">>(initialState);
 
-    const onSubmit = async (value: string) => {
+    // Create stable callback functions outside of onSubmit
+    const addMessage = useCallback<AddMessageType>((obj: MessageListType) => {
+        setUiState((prev) => ({
+            ...prev,
+            messageQueue: [...prev.messageQueue, obj],
+        }));
+    }, []);
+
+    const updateStreamingState = useCallback((state: StreamingState) => {
+        setUiState((prev) => ({
+            ...prev,
+            streamingState: state,
+        }));
+    }, []);
+
+    const onSubmit = useCallback(async (value: string) => {
         setUiState((prev) => ({
             ...prev,
             isInputActive: false,
@@ -36,31 +51,23 @@ export const AppContainer = () => {
             messageQueue: [...prev.messageQueue, { role: "user", content: value }],
         }));
 
-        const AddMessage: AddMessageType = (obj: MessageListType) => {
-            setUiState((prev) => ({
-                ...prev,
-                messageQueue: [...prev.messageQueue, obj],
-            }));
-        };
-
-        const setStreamingState = (state: StreamingState) => {
-            setUiState((prev) => ({
-                ...prev,
-                streamingState: state,
-            }));
-        };
-
-        await chatWithAI(value, AddMessage, setStreamingState);
+        await chatWithAI(value, addMessage, updateStreamingState);
 
         setUiState((prev) => ({
             ...prev,
             isInputActive: true,
             streamingState: StreamingState.Idle,
         }));
-    };
+    }, [addMessage, updateStreamingState]);
+
+    // Memoize the context value to prevent unnecessary re-renders
+    const contextValue = useMemo(() => ({
+        ...uiState,
+        onSubmit
+    }), [uiState, onSubmit]);
 
     return (
-        <UIStateContext.Provider value={{ ...uiState, onSubmit }}>
+        <UIStateContext.Provider value={contextValue}>
             <AuthUIStateContext.Provider value={authInitialState}>
                 <App />
             </AuthUIStateContext.Provider>
