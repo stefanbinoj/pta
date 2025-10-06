@@ -27,17 +27,23 @@ export const ChatMessage = React.memo(
             return null;
         } else if (message.step === "think") {
             return (
-                <Box marginY={1}>
+                <Box>
                     <Text color={Colors.Gray}>{message.content}</Text>
                 </Box>
             );
-        } else {
+        } else if (message.step === "result") {
             return (
                 <Box marginY={1}>
                     <Box marginRight={1}>
                         <Text color={Colors.AccentPurple}>&gt;</Text>
                     </Box>
 
+                    <Text color="white">{message.content}</Text>
+                </Box>
+            );
+        } else {
+            return (
+                <Box>
                     <Text color="white">{message.content}</Text>
                 </Box>
             );
