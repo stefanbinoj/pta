@@ -44,7 +44,6 @@ export const main = async (
                     } else if (name === "create_task") {
                         tool_output_content = create_task(args);
                     } else if (name === "delete_task") {
-                        console.log("deleting:",args)
                         tool_output_content = delete_task(args.id);
                     } else if (name === "get_emails") {
                         tool_output_content = { success: true, emails: [] };

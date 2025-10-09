@@ -4,7 +4,7 @@ import Gradient from "ink-gradient";
 import { Colors } from "../../ui/colors.ts";
 import { shortAsciiLogo, longAsciiLogo } from "./AsciiArts.ts";
 
-export const Header = () => {
+export const Header = React.memo(() => {
     return (
         <Box
             alignItems="flex-start"
@@ -21,4 +21,6 @@ export const Header = () => {
             )}
         </Box>
     );
-};
+});
+
+Header.displayName = "Header";

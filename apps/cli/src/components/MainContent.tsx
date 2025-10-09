@@ -1,11 +1,16 @@
 import React from "react";
-import { Static } from "ink";
 import { Header } from "../ui/components/header.tsx";
+import { useUIState } from "../context/UIStateContext.tsx";
 
-export const MainContent = () => {
+export const MainContent = React.memo(() => {
+    const { messageQueue } = useUIState();
+    const showHeader = (messageQueue?.length || 0) <= 5;
+
     return (
         <>
-            <Static items={[<Header key="header" />]}>{(item) => item}</Static>
+            {showHeader ? <Header /> : null}
         </>
     );
-};
+});
+
+MainContent.displayName = "MainContent";
